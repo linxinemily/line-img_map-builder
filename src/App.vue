@@ -79,7 +79,7 @@
                   filled
                   height="400"
                   name="input-7-4"
-                  :value="jsonOutput"
+                  :value="JSON.stringify(output, null, 4)"
                 ></v-textarea>
             </div>
           </v-flex>
@@ -238,7 +238,17 @@ export default {
     showBorderColorPicker: false,
     borderColor: '#999',
     borderWidth: 1,
-    colorPickerMode: 'single'
+    colorPickerMode: 'single',
+    output: {
+      type: "imagemap", 
+        baseUrl: "PROVIDE_URL_FROM_YOUR_SERVER", 
+        altText: "This is an imagemap", 
+        baseSize: {
+          width: 1040, 
+          height: 309
+        }, 
+        actions: []
+    }
   }),
   mounted() {
     for (let i = 0; i < this.itemsNum; i ++){
@@ -246,31 +256,16 @@ export default {
         text: '按鈕' + (i + 1)
       })
     }
+    this.$nextTick(() => {
+      this.renderData()
+    })
   },
   computed: {
     btnBgColor() {
       return this.colorPickerMode === 'single' ? this.singleBgColor : `linear-gradient(${this.gradientBgColor_1}, ${this.gradientBgColor_2})`
-    },
-    jsonOutput() {
-      const output =  {
-        type: "imagemap", 
-        baseUrl: "PROVIDE_URL_FROM_YOUR_SERVER", 
-        altText: "This is an imagemap", 
-        baseSize: {
-          width: 1040, 
-          height: 309
-        }, 
-        actions: this.items.map(el => el.data)
-      }
-      return JSON.stringify(output, null, 4)
     }
   },
   watch: {
-    // items(val) {
-    //   // eslint-disable-next-line no-console
-    //   console.log(val)
-      
-    // },
     itemsNum(val, oldVal) {
       let currenLastIdx = this.items.length + 1
       if (val > oldVal) {
@@ -287,20 +282,9 @@ export default {
           this.items.splice(this.items.length - 1, decreaseNum)
         }
       }
-      // eslint-disable-next-line no-console
-      console.log(this.$refs.cell[6])
-      this.items.map((element, idx) => {
-        // eslint-disable-next-line no-console
-        return element.data = {
-          type: "message", 
-          area: {
-            x: this.$refs.cell[6].offsetTop, 
-            y: this.$refs.cell[6].offsetLeft, 
-            width: this.$refs.cell[6].clientWidth, 
-            height: this.$refs.cell[6].clientHeight
-          }, 
-          text: "動作" + (idx + 1)
-        }
+      
+      this.$nextTick(() => {
+        this.renderData()
       })
     }
   },
@@ -325,6 +309,21 @@ export default {
             link.download = 'IMGMAP'
             link.click()
           })
+    },
+    renderData() {
+      this.items.map((element, idx) => {
+          return element.data = {
+            type: "message", 
+            area: {
+              x: this.$refs.cell[idx].offsetTop, 
+              y: this.$refs.cell[idx].offsetLeft, 
+              width: this.$refs.cell[idx].clientWidth, 
+              height: this.$refs.cell[idx].clientHeight
+            }, 
+            text: "動作" + (idx + 1)
+          }
+        })
+        this.output.actions = this.items.map(el => el.data)
     }
   }
 };
