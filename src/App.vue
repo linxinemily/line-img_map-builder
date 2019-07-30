@@ -268,6 +268,7 @@ export default {
   watch: {
     itemsNum(val, oldVal) {
       let currenLastIdx = this.items.length + 1
+      val = parseInt(val)
       if (val > oldVal) {
         const increaseNum = val - oldVal
         for (let i = 0; i < increaseNum; i ++){
@@ -312,18 +313,19 @@ export default {
     },
     renderData() {
       this.items.map((element, idx) => {
-          return element.data = {
-            type: "message", 
-            area: {
-              x: this.$refs.cell[idx].offsetTop, 
-              y: this.$refs.cell[idx].offsetLeft, 
-              width: this.$refs.cell[idx].clientWidth, 
-              height: this.$refs.cell[idx].clientHeight
-            }, 
-            text: "動作" + (idx + 1)
-          }
-        })
-        this.output.actions = this.items.map(el => el.data)
+        return element.data = {
+          type: "message", 
+          area: {
+            x: this.$refs.cell[idx].offsetTop, 
+            y: this.$refs.cell[idx].offsetLeft, 
+            width: this.$refs.cell[idx].clientWidth, 
+            height: this.$refs.cell[idx].clientHeight
+          }, 
+          text: "動作" + (idx + 1)
+        }
+      })
+      this.output.actions = this.items.map(el => el.data)
+      this.output.baseSize.height = this.$refs.btnsImg.clientHeight
     }
   }
 };
