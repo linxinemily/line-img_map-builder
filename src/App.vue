@@ -60,7 +60,13 @@
             >
                 <div
                   class="grid-cell"
-                  :style="{ 'background-color': styleOptions.bgc, 'border-radius': pxSubfixer(styleOptions.bdrs)}"
+                  :style="{ 
+                      'background': btnBgColor,
+                      'border-radius': pxSubfixer(borderRadius),
+                      'color' : textColor,
+                      'border-color': borderColor,
+                      'border-width': pxSubfixer(borderWidth)
+                    }"
                   v-for="(item, index) in items "
                   :key="index"
                 >
@@ -71,39 +77,121 @@
           <v-flex xs6 d-flex justify-center>
             <v-card max-width="450px" min-width="400px">
               <v-card-text>
-                <v-select
-                  :items="columnItems"
-                  label="橫列個數"
-                  class="mt-4 pt-4"
-                  item-value="num"
-                  item-text="num"
-                  v-model="customColumn"
-                ></v-select>
-                <v-text-field
-                  v-model="customGap"
-                  label="按鈕間距"
-                  class="mt-4 pt-4"
-                  type="number"
-                  suffix="px"
-                ></v-text-field>
-                <v-text-field
-                  v-model="itemsNum"
-                  label="按鈕個數"
-                  type="number"
-                  class="mt-4 pt-4"
-                ></v-text-field>
-                <v-text-field
-                  v-model="styleOptions.bgc"
-                  label="按鈕顏色"
-                  class="mt-4 pt-4"
-                ></v-text-field>
-                <v-text-field
-                  v-model="styleOptions.bdrs"
-                  label="按鈕圓角"
-                  type="number"
-                  class="mt-4 pt-4"
-                  suffix="px"
-                ></v-text-field>
+                <v-layout wrap>
+                  <v-flex xs6>
+                    <v-select
+                      :items="columnItems"
+                      label="橫列個數"
+                      class="mt-4 pt-4"
+                      item-value="num"
+                      item-text="num"
+                      v-model="customColumn"
+                    ></v-select>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="customGap"
+                      label="按鈕間距"
+                      class="mt-4 pt-4"
+                      type="number"
+                      suffix="px"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="itemsNum"
+                      label="按鈕個數"
+                      type="number"
+                      class="mt-4 pt-4"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="borderRadius"
+                      label="按鈕圓角"
+                      type="number"
+                      class="mt-4 pt-4"
+                      suffix="px"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field
+                      v-model="borderWidth"
+                      label="邊線寬度"
+                      type="number"
+                      class="mt-4 pt-4"
+                      suffix="px"
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>
+
+                <div>
+                  <div>按鈕顏色</div>
+                  <v-radio-group v-model="colorPickerMode" row>
+                    <v-radio label="純色" value="single"></v-radio>
+                    <v-radio label="漸層" value="gradient"></v-radio>
+                  </v-radio-group>
+                  <div class="color_picker--single" v-if="colorPickerMode === 'single'">
+                     <div
+                        class="color_picked_box"
+                        @click="showBtnColorPicker = !showBtnColorPicker"
+                      >
+                        <div
+                          class="color_picked_box-inner"
+                          :style="{ 'background-color': singleBgColor }"
+                        ></div>
+                      </div>
+                      <v-color-picker v-show="showBtnColorPicker" v-model="singleBgColor" mode="hexa"></v-color-picker>
+                  </div>
+                  <div class="color_picker--gradient" v-else>
+                      <span>顏色 1</span>                      
+                      <div
+                        class="color_picked_box"
+                        @click="showBtnGradientPicker_1 = !showBtnGradientPicker_1"
+                      >
+                        <div
+                          class="color_picked_box-inner"
+                          :style="{ 'background-color': gradientBgColor_1 }"
+                        ></div>
+                      </div>
+                      <v-color-picker v-show="showBtnGradientPicker_1" v-model="gradientBgColor_1" mode="hexa"></v-color-picker>
+                      <span>顏色 2</span>                      
+                      <div
+                        class="color_picked_box"
+                        @click="showBtnGradientPicker_2 = !showBtnGradientPicker_2"
+                      >
+                        <div
+                          class="color_picked_box-inner"
+                          :style="{ 'background-color': gradientBgColor_2 }"
+                        ></div>
+                      </div>
+                      <v-color-picker v-show="showBtnGradientPicker_2" v-model="gradientBgColor_2" mode="hexa"></v-color-picker>
+                  </div>
+                </div>
+                <div class="mt-5 mb-5">
+                  <div>字體顏色</div>
+                  <div
+                    class="color_picked_box"
+                    @click="showTextColorPicker = !showTextColorPicker"
+                  >
+                    <div
+                      class="color_picked_box-inner"
+                      :style="{ 'background-color': textColor }"
+                    ></div>
+                  </div>
+                  <v-color-picker v-show="showTextColorPicker" v-model="textColor" mode="hexa"></v-color-picker>
+                </div>
+                  <div>邊線顏色</div>
+                  <div
+                    class="color_picked_box"
+                    @click="showBorderColorPicker = !showBorderColorPicker"
+                  >
+                    <div
+                      class="color_picked_box-inner"
+                      :style="{ 'background-color': borderColor }"
+                    ></div>
+                  </div>
+                  <v-color-picker v-show="showBorderColorPicker" v-model="borderColor" mode="hexa"></v-color-picker>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -127,22 +215,32 @@ export default {
     columnItems: [ 2, 3, 4 ],
     customColumn: 3,
     items: [],
-    dialog: false,
-    templateGap: 10,
     customGap: 10,
-    templateColumns: `repeat(3, 1fr)`,
     itemsNum: 6,
-    styleOptions: {
-      bgc: '#eee',
-      bdrs: 4
-    },
-    bgcColorPicker: false
+    borderRadius: 4,
+    showBtnColorPicker: false,
+    showBtnGradientPicker_1: false,
+    showBtnGradientPicker_2: false,
+    singleBgColor: '#eee',
+    gradientBgColor_1: '#fefefe',
+    gradientBgColor_2: '#eee',
+    showTextColorPicker: false,
+    textColor: '#666',
+    showBorderColorPicker: false,
+    borderColor: '#999',
+    borderWidth: 1,
+    colorPickerMode: 'single'
   }),
   created() {
     for (let i = 0; i < this.itemsNum; i ++){
       this.items.push({
         text: '按鈕' + (i + 1)
       })
+    }
+  },
+  computed: {
+    btnBgColor() {
+      return this.colorPickerMode === 'single' ? this.singleBgColor : `linear-gradient(${this.gradientBgColor_1}, ${this.gradientBgColor_2})`
     }
   },
   watch: {
@@ -165,11 +263,6 @@ export default {
     }
   },
   methods: {
-    SetColumnsRows() {
-      this.templateColumns = `repeat(${this.customColumn}, 1fr)`
-      this.dialog = false
-      this.templateGap = this.customGap + 'px'
-    },
     pickBgcColor() {
       this.bgcColorPicker = !this.bgcColorPicker
     },
@@ -190,13 +283,7 @@ export default {
             link.download = 'IMGMAP'
             link.click()
           })
-    },
-    // domtoimageload(canvas, el) {
-    //     // const base64 = canvas.toDataURL("image/png")
-    //     el.target.href = canvas.toDataURL("image/png")
-    //     el.target = "_blank"
-    //     el.download = 'IMGMAP'
-    // }
+    }
   }
 };
 </script>
@@ -208,6 +295,7 @@ export default {
   background-color: transparent;
   grid-template-columns: repeat(3, 1fr);
   &-cell {
+    border-style: solid;
     background-color: #eee;
     width: 100%;
     height: 50px;
@@ -232,6 +320,18 @@ export default {
 .no_css {
   color: #fff;
   text-decoration-line: none;
+}
+
+.color_picked_box {
+  margin-right: 10px;
+  border: 1px solid #eee;
+  display: inline-block;
+  &-inner {
+    width: 20px;
+    height: 24px;
+    margin: 4px;
+    border-radius: 2px;
+  }
 }
 </style>
 
