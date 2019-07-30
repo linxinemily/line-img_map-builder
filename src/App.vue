@@ -60,6 +60,7 @@
             >
                 <div
                   class="grid-cell"
+                  ref="cell"
                   :style="{ 
                       'background': btnBgColor,
                       'border-radius': pxSubfixer(borderRadius),
@@ -72,6 +73,14 @@
                 >
                   <input type="text" v-model="item.text">
                 </div>
+            </div>
+            <div class="mt-10">
+                <v-textarea
+                  filled
+                  height="400"
+                  name="input-7-4"
+                  :value="jsonOutput"
+                ></v-textarea>
             </div>
           </v-flex>
           <v-flex xs6 d-flex justify-center>
@@ -231,7 +240,7 @@ export default {
     borderWidth: 1,
     colorPickerMode: 'single'
   }),
-  created() {
+  mounted() {
     for (let i = 0; i < this.itemsNum; i ++){
       this.items.push({
         text: '按鈕' + (i + 1)
@@ -241,9 +250,27 @@ export default {
   computed: {
     btnBgColor() {
       return this.colorPickerMode === 'single' ? this.singleBgColor : `linear-gradient(${this.gradientBgColor_1}, ${this.gradientBgColor_2})`
+    },
+    jsonOutput() {
+      const output =  {
+        type: "imagemap", 
+        baseUrl: "PROVIDE_URL_FROM_YOUR_SERVER", 
+        altText: "This is an imagemap", 
+        baseSize: {
+          width: 1040, 
+          height: 309
+        }, 
+        actions: this.items.map(el => el.data)
+      }
+      return JSON.stringify(output, null, 4)
     }
   },
   watch: {
+    // items(val) {
+    //   // eslint-disable-next-line no-console
+    //   console.log(val)
+      
+    // },
     itemsNum(val, oldVal) {
       let currenLastIdx = this.items.length + 1
       if (val > oldVal) {
@@ -260,6 +287,21 @@ export default {
           this.items.splice(this.items.length - 1, decreaseNum)
         }
       }
+      // eslint-disable-next-line no-console
+      console.log(this.$refs.cell[6])
+      this.items.map((element, idx) => {
+        // eslint-disable-next-line no-console
+        return element.data = {
+          type: "message", 
+          area: {
+            x: this.$refs.cell[6].offsetTop, 
+            y: this.$refs.cell[6].offsetLeft, 
+            width: this.$refs.cell[6].clientWidth, 
+            height: this.$refs.cell[6].clientHeight
+          }, 
+          text: "動作" + (idx + 1)
+        }
+      })
     }
   },
   methods: {
@@ -275,7 +317,7 @@ export default {
     downloadImg(){
         const dom = this.$refs.btnsImg;
         const link = this.$refs.link
-        html2canvas(dom, { width: dom.clientWidth, backgroundColor: 'transparent' })
+        html2canvas(dom, { width: 520, backgroundColor: 'transparent' })
           .then(function(canvas) {
             const url = canvas.toDataURL("image/png")
             link.href = url
@@ -288,8 +330,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+textarea {
+  font-family: monospace !important;
+}
 .grid {
+  position: relative;
+  width: 520px;
   display: grid;
   grid-gap: 8px;
   background-color: transparent;
@@ -304,6 +351,8 @@ export default {
     align-items: center;
     input {
       text-align: center;
+      width: 100%;
+      letter-spacing: 2px;
       &:focus {
         outline: none;
       }
