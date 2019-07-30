@@ -327,8 +327,8 @@ export default {
   border: 1px solid #eee;
   display: inline-block;
   &-inner {
-    width: 20px;
-    height: 24px;
+    width: 28px;
+    height: 20px;
     margin: 4px;
     border-radius: 2px;
   }
