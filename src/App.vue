@@ -53,26 +53,28 @@
             <button @click.self="downloadImg" color="primary" class="mb-5 self_btn mb-5 self_btn v-btn v-btn--contained theme--light v-size--default primary">匯出圖片
               <a class="no_css" ref="link" style="visibility: hidden;"></a>
             </button>
-            <div
-              ref="btnsImg"
-              class="grid"
-              :style="{ 'grid-template-columns': columnPrefixer(customColumn), 'grid-gap':  pxSubfixer(customGap) }"
-            >
-                <div
-                  class="grid-cell"
-                  ref="cell"
-                  :style="{ 
-                      'background': btnBgColor,
-                      'border-radius': pxSubfixer(borderRadius),
-                      'color' : textColor,
-                      'border-color': borderColor,
-                      'border-width': pxSubfixer(borderWidth)
-                    }"
-                  v-for="(item, index) in items "
-                  :key="index"
-                >
-                  <input type="text" v-model="item.text">
-                </div>
+            <div ref="btnsImgOuter">
+              <div
+                ref="btnsImg"
+                class="grid"
+                :style="{ 'grid-template-columns': columnPrefixer(customColumn), 'grid-gap':  pxSubfixer(customGap) }"
+              >
+                  <div
+                    class="grid-cell"
+                    ref="cell"
+                    :style="{ 
+                        'background': btnBgColor,
+                        'border-radius': pxSubfixer(borderRadius),
+                        'color' : textColor,
+                        'border-color': borderColor,
+                        'border-width': pxSubfixer(borderWidth)
+                      }"
+                    v-for="(item, index) in items "
+                    :key="index"
+                  >
+                    <input type="text" v-model="item.text">
+                  </div>
+              </div>
             </div>
             <div class="mt-10">
                 <v-textarea
@@ -213,13 +215,12 @@
 <script>
 // import HelloWorld from './components/HelloWorld';
 import Vue from 'vue'
-import html2canvas from 'html2canvas';
-Vue.use(html2canvas)
+// import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
+// Vue.use(html2canvas)
+Vue.use(domtoimage)
 export default {
   name: 'App',
-  components: {
-    // HelloWorld,
-  },
   data: () => ({
     columnItems: [ 2, 3, 4 ],
     customColumn: 3,
@@ -300,16 +301,35 @@ export default {
       return 'repeat(' + val + ', 1fr)'
     },
     downloadImg(){
-        const dom = this.$refs.btnsImg;
-        const link = this.$refs.link
-        html2canvas(dom, { width: 520, backgroundColor: 'transparent' })
-          .then(function(canvas) {
-            const url = canvas.toDataURL("image/png")
-            link.href = url
-            link.target = "_blank"
-            link.download = 'IMGMAP'
-            link.click()
-          })
+      const dom = this.$refs.btnsImg;
+      const link = this.$refs.link
+      // html2canvas(dom, { width: 520, backgroundColor: 'transparent', scrollX: 0, scrollY: -window.scrollY })
+      //   .then(function(canvas) {
+      //     const url = canvas.toDataURL("image/png")
+      //     link.href = url
+      //     link.target = "_blank"
+      //     link.download = 'IMGMAP'
+      //     link.click()
+      //   })
+      const options = {
+        style: {
+          'transform': 'scale(2)',
+          'transform-origin': 'top left'
+        },
+        width: 1040,
+        height: dom.clientHeight * 2
+      }
+      domtoimage.toPng(dom, options)
+        .then(function(url) {
+          link.href = url
+          link.target = "_blank"
+          link.download = 'IMGMAP'
+          link.click()
+        })
+        .catch(function (error) {
+          // eslint-disable-next-line no-console
+          console.error('oops, something went wrong!', error);
+        });
     },
     renderData() {
       this.items.map((element, idx) => {
