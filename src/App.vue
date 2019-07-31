@@ -76,8 +76,12 @@
                   </div>
               </div>
             </div>
-            <div class="mt-10">
+            <div class="mt-10" style="position: relative;">
+                <v-btn class="ma-2 copy_btn" @click="copyToClipboard">
+                  複製到剪貼簿
+                </v-btn>
                 <v-textarea
+                  ref="jsonData"
                   filled
                   height="400"
                   name="input-7-4"
@@ -336,16 +340,21 @@ export default {
         return element.data = {
           type: "message", 
           area: {
-            x: this.$refs.cell[idx].offsetTop, 
-            y: this.$refs.cell[idx].offsetLeft, 
-            width: this.$refs.cell[idx].clientWidth, 
-            height: this.$refs.cell[idx].clientHeight
+            x: this.$refs.cell[idx].offsetTop * 2, 
+            y: this.$refs.cell[idx].offsetLeft * 2, 
+            width: this.$refs.cell[idx].clientWidth * 2, 
+            height: this.$refs.cell[idx].clientHeight * 2
           }, 
           text: "動作" + (idx + 1)
         }
       })
       this.output.actions = this.items.map(el => el.data)
       this.output.baseSize.height = this.$refs.btnsImg.clientHeight
+    },
+    copyToClipboard() {
+      const jsonData = document.querySelector('.v-text-field__slot > textarea')
+      jsonData.select()
+      document.execCommand("copy")
     }
   }
 };
@@ -402,6 +411,12 @@ textarea {
     margin: 4px;
     border-radius: 2px;
   }
+}
+.copy_btn {
+  position: absolute !important;
+  right: 4px;
+  top: 4px;
+  z-index: 100;
 }
 </style>
 
