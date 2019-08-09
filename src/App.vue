@@ -3,53 +3,8 @@
     <template>
       <v-container grid-list-md>
         <h1 class="mt-10 mb-10 text-center">LINE IMGMAP BUILDER</h1>
-        <!-- <v-btn
-          class="mt-12"
-          @click="dialog = !dialog"
-        >
-          設定欄和列
-        </v-btn>
-        <v-dialog
-          class="mb-12"
-          v-model="dialog"
-          max-width="400"
-        >
-          <v-card>
-            <v-card-title class="headline grey lighten-2">設定欄和列</v-card-title>
-            <v-spacer></v-spacer>
-            <v-card-text>
-              <v-select
-                :items="columnItems"
-                filled
-                label="橫列個數"
-                item-value="num"
-                item-text="num"
-                v-model="customColumn"
-              ></v-select>
-              <v-text-field
-                v-model="customGap"
-                label="按鈕間距"
-                class="mt-0 pt-0"
-                type="number"
-                suffix="px"
-              ></v-text-field>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
-              <v-btn
-                color="green darken-1"
-                text
-                @click="SetColumnsRows"
-              >
-                確定
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog> -->
-        <v-layout wrap>
-          <v-flex xs6>
+        <v-layout row>
+          <v-flex xs6 lg7>
             <button @click.self="downloadImg" color="primary" class="mb-5 self_btn mb-5 self_btn v-btn v-btn--contained theme--light v-size--default primary">匯出圖片
               <a class="no_css" ref="link" style="visibility: hidden;"></a>
             </button>
@@ -89,7 +44,7 @@
                 ></v-textarea>
             </div>
           </v-flex>
-          <v-flex xs6 d-flex justify-center>
+          <v-flex xs6 lg5 d-flex justify-center>
             <v-card max-width="450px" min-width="400px">
               <v-card-text>
                 <v-layout wrap>
@@ -219,9 +174,7 @@
 <script>
 // import HelloWorld from './components/HelloWorld';
 import Vue from 'vue'
-// import html2canvas from 'html2canvas';
 import domtoimage from 'dom-to-image';
-// Vue.use(html2canvas)
 Vue.use(domtoimage)
 export default {
   name: 'App',
@@ -307,14 +260,6 @@ export default {
     downloadImg(){
       const dom = this.$refs.btnsImg;
       const link = this.$refs.link
-      // html2canvas(dom, { width: 520, backgroundColor: 'transparent', scrollX: 0, scrollY: -window.scrollY })
-      //   .then(function(canvas) {
-      //     const url = canvas.toDataURL("image/png")
-      //     link.href = url
-      //     link.target = "_blank"
-      //     link.download = 'IMGMAP'
-      //     link.click()
-      //   })
       const options = {
         style: {
           'transform': 'scale(2)',
@@ -336,18 +281,6 @@ export default {
         });
     },
     renderData() {
-      // this.items.map((element, idx) => {
-      //   return element.data = {
-      //     type: "message", 
-      //     area: {
-      //       x: this.$refs.cell[idx].offsetLeft * 2,
-      //       y: this.$refs.cell[idx].offsetTop * 2, 
-      //       width: this.$refs.cell[idx].clientWidth * 2, 
-      //       height: this.$refs.cell[idx].clientHeight * 2
-      //     }, 
-      //     text: "動作" + (idx + 1)
-      //   }
-      // })
       this.output.actions = this.items.map((el, idx) => {
         return {
           type: "message", 
