@@ -3,35 +3,66 @@
     <template>
       <v-container grid-list-md>
         <h1 class="mt-10 mb-10 text-center">LINE IMGMAP BUILDER</h1>
+        <v-dialog
+          v-model="openUploadSuccessModal"
+          width="500"
+        >
+          <v-card>
+            <v-card-text>
+              上傳圖片成功！可以複製下方的JSON到你的LINE bot當中囉！
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="primary"
+                text
+                @click="openUploadSuccessModal = false"
+              >
+                確定
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <v-layout row>
           <v-flex xs6 lg7>
-            <button @click.self="downloadImg" color="primary" class="mb-5 self_btn mb-5 self_btn v-btn v-btn--contained theme--light v-size--default primary">匯出圖片
+            <v-btn @click.self="downloadImg" color="primary" class="ma-2">
+              <v-icon class="mr-1">save</v-icon> 另存圖片
               <a class="no_css" ref="link" style="visibility: hidden;"></a>
-            </button>
-            <div ref="btnsImgOuter">
-              <div
-                ref="btnsImg"
-                class="grid"
-                :style="{ 'grid-template-columns': columnPrefixer(customColumn), 'grid-gap':  pxSubfixer(customGap) }"
-              >
+            </v-btn>
+            <v-btn @click="uploadImg" :loading="loading" :disabled="loading" color="success" class="ma-2">
+              <v-icon class="mr-1">cloud_upload</v-icon>上傳圖片
+            </v-btn>
+            <h4 class="title mt-3">圖片編輯</h4>
+            <v-card outlined>
+              <v-card-text>
+                <div ref="btnsImgOuter">
                   <div
-                    class="grid-cell"
-                    ref="cell"
-                    :style="{ 
-                        'background': btnBgColor,
-                        'border-radius': pxSubfixer(borderRadius),
-                        'color' : textColor,
-                        'border-color': borderColor,
-                        'border-width': pxSubfixer(borderWidth)
-                      }"
-                    v-for="(item, index) in items "
-                    :key="index"
+                    ref="btnsImg"
+                    class="grid"
+                    :style="{ 'grid-template-columns': columnPrefixer(customColumn), 'grid-gap':  pxSubfixer(customGap) }"
                   >
-                    <input type="text" v-model="item.text">
-                  </div>
+                    <div
+                      class="grid-cell"
+                      ref="cell"
+                      :style="{ 
+                          'background': btnBgColor,
+                          'border-radius': pxSubfixer(borderRadius),
+                          'color' : textColor,
+                          'border-color': borderColor,
+                          'border-width': pxSubfixer(borderWidth)
+                        }"
+                      v-for="(item, index) in items "
+                      :key="index"
+                    >
+                      <input type="text" v-model="item.text">
+                    </div>
+                </div>
               </div>
-            </div>
-            <div class="mt-10" style="position: relative;">
+              </v-card-text>
+            </v-card>
+            <h4 class="title mt-10">JSON資料</h4>
+            <div style="position: relative;">
                 <v-btn class="ma-2 copy_btn" @click="copyToClipboard">
                   複製到剪貼簿
                 </v-btn>
@@ -172,10 +203,11 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
 import Vue from 'vue'
 import domtoimage from 'dom-to-image';
+import { setTimeout } from 'timers';
 Vue.use(domtoimage)
+
 export default {
   name: 'App',
   data: () => ({
@@ -197,16 +229,18 @@ export default {
     borderColor: '#009300',
     borderWidth: 1,
     colorPickerMode: 'single',
+    openUploadSuccessModal: false,
     output: {
       type: "imagemap", 
-        baseUrl: "PROVIDE_URL_FROM_YOUR_SERVER", 
-        altText: "This is an imagemap", 
-        baseSize: {
-          width: 1040, 
-          height: 0
-        }, 
-        actions: []
-    }
+      baseUrl: "PROVIDE_URL_FROM_YOUR_SERVER", 
+      altText: "This is an imagemap", 
+      baseSize: {
+        width: 1040, 
+        height: 0
+      }, 
+      actions: []
+    },
+    loading: false
   }),
   mounted() {
     for (let i = 0; i < this.itemsNum; i ++){
@@ -299,6 +333,37 @@ export default {
       const jsonData = document.querySelector('.v-text-field__slot > textarea')
       jsonData.select()
       document.execCommand("copy")
+    },
+    uploadImg() {
+      this.loading = true
+      const dom = this.$refs.btnsImg;
+      const options = {
+        style: {
+          'transform': 'scale(2)',
+          'transform-origin': 'top left'
+        },
+        width: 1040,
+        height: dom.clientHeight * 2
+      }
+      const self = this
+      domtoimage.toPng(dom, options)
+        .then(function(url) {
+            let formData = new FormData();
+            formData.append('image', url.split(',')[1]);
+              (async() => {
+                const { data } = await Vue.axios.post('https://api.imgur.com/3/image', 
+                  formData
+                ,{
+                  headers: {
+                    'content-type': 'multipart/form-data',
+                  }
+                })
+                self.output.baseUrl = data.data.link
+                self.openUploadSuccessModal = true
+                self.loading = false
+              })()          
+          })
+      
     }
   }
 };
