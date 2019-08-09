@@ -250,7 +250,7 @@ export default {
         altText: "This is an imagemap", 
         baseSize: {
           width: 1040, 
-          height: 309
+          height: 0
         }, 
         actions: []
     }
@@ -336,20 +336,31 @@ export default {
         });
     },
     renderData() {
-      this.items.map((element, idx) => {
-        return element.data = {
+      // this.items.map((element, idx) => {
+      //   return element.data = {
+      //     type: "message", 
+      //     area: {
+      //       x: this.$refs.cell[idx].offsetLeft * 2,
+      //       y: this.$refs.cell[idx].offsetTop * 2, 
+      //       width: this.$refs.cell[idx].clientWidth * 2, 
+      //       height: this.$refs.cell[idx].clientHeight * 2
+      //     }, 
+      //     text: "動作" + (idx + 1)
+      //   }
+      // })
+      this.output.actions = this.items.map((el, idx) => {
+        return {
           type: "message", 
           area: {
-            x: this.$refs.cell[idx].offsetTop * 2, 
-            y: this.$refs.cell[idx].offsetLeft * 2, 
+            x: this.$refs.cell[idx].offsetLeft * 2,
+            y: this.$refs.cell[idx].offsetTop * 2, 
             width: this.$refs.cell[idx].clientWidth * 2, 
             height: this.$refs.cell[idx].clientHeight * 2
           }, 
           text: "動作" + (idx + 1)
         }
       })
-      this.output.actions = this.items.map(el => el.data)
-      this.output.baseSize.height = this.$refs.btnsImg.clientHeight
+      this.output.baseSize.height = this.$refs.btnsImg.clientHeight * 2
     },
     copyToClipboard() {
       const jsonData = document.querySelector('.v-text-field__slot > textarea')
@@ -361,6 +372,10 @@ export default {
 </script>
 
 <style lang="scss">
+body, html {
+  font-family: 'PingFang SC.', '微軟正黑體'
+}
+
 textarea {
   font-family: monospace !important;
 }
