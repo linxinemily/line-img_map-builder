@@ -376,6 +376,10 @@ body, html {
   font-family: 'PingFang SC.', '微軟正黑體'
 }
 
+#app {
+  font-family: 'PingFang SC.', '微軟正黑體'
+}
+
 textarea {
   font-family: monospace !important;
 }
