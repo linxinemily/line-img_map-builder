@@ -26,10 +26,10 @@
         </v-dialog>
         <v-layout row>
           <v-flex xs6 lg7>
-            <v-btn @click.self="downloadImg" color="primary" class="ma-2">
+            <v-btn @click="downloadImg" color="primary" class="ma-2">
               <v-icon class="mr-1">save</v-icon> 另存圖片
-              <a class="no_css" ref="link" style="visibility: hidden;"></a>
             </v-btn>
+            <a class="no_css" ref="link" style="visibility: hidden;"></a>
             <v-btn @click="uploadImg" :loading="loading" :disabled="loading" color="success" class="ma-2">
               <v-icon class="mr-1">cloud_upload</v-icon>上傳圖片
             </v-btn>
@@ -205,7 +205,6 @@
 <script>
 import Vue from 'vue'
 import domtoimage from 'dom-to-image';
-import { setTimeout } from 'timers';
 Vue.use(domtoimage)
 
 export default {
@@ -294,14 +293,7 @@ export default {
     downloadImg(){
       const dom = this.$refs.btnsImg;
       const link = this.$refs.link
-      const options = {
-        style: {
-          'transform': 'scale(2)',
-          'transform-origin': 'top left'
-        },
-        width: 1040,
-        height: dom.clientHeight * 2
-      }
+      const options = this.domtoimageOptions(dom)
       domtoimage.toPng(dom, options)
         .then(function(url) {
           link.href = url
@@ -337,17 +329,9 @@ export default {
     uploadImg() {
       this.loading = true
       const dom = this.$refs.btnsImg;
-      const options = {
-        style: {
-          'transform': 'scale(2)',
-          'transform-origin': 'top left'
-        },
-        width: 1040,
-        height: dom.clientHeight * 2
-      }
-      const self = this
+      const options = this.domtoimageOptions(dom)
       domtoimage.toPng(dom, options)
-        .then(function(url) {
+        .then((url) => {
             let formData = new FormData();
             formData.append('image', url.split(',')[1]);
               (async() => {
@@ -358,12 +342,22 @@ export default {
                     'content-type': 'multipart/form-data',
                   }
                 })
-                self.output.baseUrl = data.data.link
-                self.openUploadSuccessModal = true
-                self.loading = false
+                this.output.baseUrl = data.data.link
+                this.openUploadSuccessModal = true
+                this.loading = false
               })()          
           })
       
+    },
+    domtoimageOptions(dom) {
+       return {
+        style: {
+          'transform': 'scale(2)',
+          'transform-origin': 'top left'
+        },
+        width: 1040,
+        height: dom.clientHeight * 2
+      }
     }
   }
 };
